@@ -9,7 +9,7 @@ https://drive.google.com/file/d/1lxrmnupBleE7NIFbAbv1e1e-vo19GnJy/view?usp=shari
 
 # ★ BaicMaths★
 
-![HTML](https://img.shields.io/badge/HTML-3.9+-blue.svg)
+![HTML](https://img.shields.io/badge/HTML-5.0+-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Status](https://img.shields.io/badge/Status-Experimental-orange.svg)
 ![PRs](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)
