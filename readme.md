@@ -1,3 +1,10 @@
+<!-- <<<<<<< kirbyandluigixxcf-patch-1 -->
+<!-- ======= -->
+##DEMO VIDEO
+https://drive.google.com/file/d/1lxrmnupBleE7NIFbAbv1e1e-vo19GnJy/view?usp=sharing
+
+★ Image Generator + Calculator GUI ★
+<!-- >>>>>>> main -->
 
 
 # ★ BaicMaths★
