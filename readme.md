@@ -9,7 +9,7 @@ https://drive.google.com/file/d/1lxrmnupBleE7NIFbAbv1e1e-vo19GnJy/view?usp=shari
 
 # ★ BaicMaths★
 
-![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
+![HTML](https://img.shields.io/badge/HTML-3.9+-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Status](https://img.shields.io/badge/Status-Experimental-orange.svg)
 ![PRs](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)
@@ -77,12 +77,12 @@ F5 command
 
 ```
 image-calc-combo/
- ┣ assets/           # Static files, icons, sample images
- ┣ app.py            # Main entry point
- ┣ calculator.py     # Calculator GUI logic
- ┣ generator.py      # Image generator functions
- ┣ requirements.txt  # Python dependencies
- ┗ README.md         # Project documentation
+ ┣ img/           #imagesforthe animals
+ ┣ gif/            # gifs on spam page
+ ┣ index.html     # calculator ui
+ ┣ output.html     # page after the output is yield
+ ┣ btn1.html  #post animate btn page
+ ┗ download.html        # downloads automatically
 ```
 
 ---
