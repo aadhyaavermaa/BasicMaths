@@ -1,90 +1,108 @@
-★ Image Generator + Calculator GUI ★
-
-A creative mashup that blends together:
-
-★ Image Generator — simple visual generation
-
-★ Calculator GUI — basic arithmetic with a classic calculator UI
-
-★ Both combined into one application
-
-★ Features
-
-Basic Image Generator for quick visuals
-
-Calculator GUI supporting Add, Subtract, Multiply, Divide
-
-Unified interface combining both tools
-
-Download support (currently a bit tricky)
-
-Lightweight and beginner-friendly
-
-Planned improvements:
-
-★ Scientific Calculator mode
-
-★ Meme integration in Scientific mode
-
-★ Smooth export/download flow
-
-★ Preview
 
 
-(Replace with your actual app screenshot)
+# ★ BaicMaths★
 
-★ Installation
+![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+![Status](https://img.shields.io/badge/Status-Experimental-orange.svg)
+![PRs](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)
 
-Clone this repository:
+A hybrid desktop app that combines an **Image Generator** with a **Calculator GUI** into a single interface.
+This project is a lightweight experiment aimed at blending utility and creativity in one tool.
 
-git clone https://github.com/your-username/image-calc-combo.git
-cd image-calc-combo
+---
 
+## ★ Features
+
+* ★ Basic **Image Generator** for quick visuals
+* ★ **Calculator GUI** supporting Add, Subtract, Multiply, Divide
+* ★ Unified interface — no need to run separate tools
+* ★ Download support (works but requires some extra steps)
+* ★ Beginner-friendly and minimal dependencies
+
+**Planned Enhancements**
+
+* ★ Scientific Calculator mode
+* ★ Meme integration in Scientific mode
+* ★ Simplified download/export
+
+---
+
+## ★ Preview
+
+
+
+---
+
+## ★ Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/your-username/BasicMaths.git
+cd BasicMaths
+```
 
 Install dependencies:
 
+```bash
 pip install -r requirements.txt
-
+```
 
 Run the application:
 
-python app.py
+```bash
+F5 command
+```
 
-★ Usage
+---
 
-Launch the app
+## ★ Usage
 
-Use the Calculator tab for quick arithmetic
+* Launch the app
+* Navigate to the **Calculator Tab** for quick math
+* Switch to the **Image Generator Tab** for visuals
+* Export/Download results (experimental feature)
 
-Switch to the Image Generator tab for visuals
+---
 
-Download results (somewhat tricky, work in progress)
+## ★ Project Structure
 
-★ Project Structure
-📦 image-calc-combo
- ┣ 📂 assets/         # Icons, generated images
- ┣ 📜 app.py          # Main entry point
- ┣ 📜 calculator.py   # Calculator GUI logic
- ┣ 📜 generator.py    # Image generator functions
- ┣ 📜 requirements.txt
- ┗ 📜 README.md
+```
+image-calc-combo/
+ ┣ assets/           # Static files, icons, sample images
+ ┣ app.py            # Main entry point
+ ┣ calculator.py     # Calculator GUI logic
+ ┣ generator.py      # Image generator functions
+ ┣ requirements.txt  # Python dependencies
+ ┗ README.md         # Project documentation
+```
 
-★ Contributing
+---
 
-Fork the project
+## ★ Contributing
 
-Create your feature branch (git checkout -b feature/YourFeature)
+Contributions are highly welcome. To contribute:
 
-Commit changes (git commit -m 'Add YourFeature')
+1. Fork this repository
+2. Create your feature branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes (`git commit -m 'Add YourFeature'`)
+4. Push to your branch (`git push origin feature/YourFeature`)
+5. Open a Pull Request
 
-Push to your branch (git push origin feature/YourFeature)
+---
 
-Open a Pull Request
+## ★ License
 
-★ License
+This project is licensed under the **MIT License**.
+You are free to use, modify, and distribute it as per the license terms.
 
-MIT License © 2025 [Your Name]
+---
 
-★ Notes
+## ★ Notes
 
-This project is currently experimental. The download/export feature works, but not smoothly. Contributions and suggestions are always welcome.
+This is an experimental project. While the core features work, expect rough edges (especially in download/export). The project is open for ideas and improvements.
+
+---
+
+
