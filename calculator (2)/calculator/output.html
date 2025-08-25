@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #000000;
+      color: #ffff00;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2vw;
+      position: relative;
+      transition: background-color 0.5s ease;
+      overflow: hidden;
+    }
+
+    #backgroundVideo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      opacity: 0.3;
+    }
+
+    body.animating {
+      background: #ffff00;
+      color: #000000;
+    }
+
+    #topLeftAnimateBtn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 5px 10px;
+      font-size: 12px;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      color: #333;
+      cursor: pointer;
+      transition: transform 0.3s ease-in-out;
+      transform-origin: top left;
+      z-index: 10;
+    }
+
+    #output {
+      max-width: 400px;
+      width: 80vw;
+      border-radius: 8px;
+      border: 3px solid #ffff00;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+      margin: 2rem 0;
+    }
+
+    .button-container {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    #animateBtn {
+      padding: 1.5rem 3rem;
+      font-size: 1.5rem;
+      background: #ffff00;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    #animateBtn:hover {
+      background: #ffd700;
+    }
+
+    .animating-text {
+      font-size: 3rem;
+      font-weight: bold;
+      text-align: center;
+      color: #000000;
+      display: none;
+    }
+
+    .progress-container {
+      width: 80%;
+      max-width: 500px;
+      height: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      margin: 2rem 0;
+      display: none;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #000000;
+      border-radius: 10px;
+      width: 0%;
+      transition: width 0.1s ease;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 768px) {
+      .button-container {
+        flex-direction: column;
+      }
+      
+      .animating-text {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <video id="backgroundVideo" autoplay muted loop>
+    <source src="d426cda8d1707ed9dfb6a3db341b5d03.mp4" type="video/mp4">
+  </video>
+  
+  <button id="topLeftAnimateBtn">animate</button>
+
+  <div id="mainContent">
+    <h1>Image is ready! Next Steps....</h1>
+    
+    <img id="output" src="ima.jpg" alt="Generated Image">
+
+    <div class="button-container">
+      <button id="animateBtn">Animate It!</button>
+    </div>
+  </div>
+
+  <div id="animatingContent" class="hidden">
+    <div class="animating-text">ANIMATING.....</div>
+    <div class="progress-container">
+      <div class="progress-bar"></div>
+    </div>
+  </div>
+
+  <script>
+    let clickCount = 0;
+    let isAnimating = false;
+
+    const topLeftBtn = document.getElementById("topLeftAnimateBtn");
+    const animateBtn = document.getElementById("animateBtn");
+    const mainContent = document.getElementById("mainContent");
+    const animatingContent = document.getElementById("animatingContent");
+    const progressBar = document.querySelector(".progress-bar");
+    const body = document.body;
+
+    topLeftBtn.addEventListener("click", () => {
+      window.location.href = 'btn1.html';
+    });
+
+    animateBtn.addEventListener("click", () => {
+      if (isAnimating) return;
+      
+      clickCount++;
+      
+      const newScale = Math.pow(2, clickCount);
+      topLeftBtn.style.transform = `scale(${newScale})`;
+      
+      if (clickCount >= 3) {
+        startAnimation();
+      }
+    });
+
+    function startAnimation() {
+      isAnimating = true;
+      body.classList.add('animating');
+      mainContent.classList.add('hidden');
+      animatingContent.classList.remove('hidden');
+      
+      const progressContainer = document.querySelector('.progress-container');
+      progressContainer.style.display = 'block';
+      
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 1;
+        progressBar.style.width = progress + '%';
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            window.location.href = 'btn1.html';
+          }, 500);
+        }
+      }, 50);
+    }
+  </script>
+</body>
+</html>

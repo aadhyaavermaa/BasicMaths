@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bird Image Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Left Panel - Output Image */
+        .output-panel {
+            flex: 1;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-right: 2px solid #333;
+        }
+
+        .output-image-container {
+            width: 90%;
+            max-width: 500px;
+            aspect-ratio: 1;
+            background: #2d2d30;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .output-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        .placeholder-text {
+            color: #ccc;
+            font-size: 1.5rem;
+            text-align: center;
+            font-weight: 300;
+        }
+
+        .operation-display {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e3e3e3;
+            border-top: 4px solid #ffff00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Right Panel - Calculator */
+        .calculator-panel {
+            width: 450px;
+            background: #2d2d30;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calculator-header {
+            padding: 20px;
+            background: #3c3c3f;
+            border-bottom: 1px solid #555;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .app-title {
+            font-family: 'Lexend', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .toggle-container {
+            display: flex;
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 4px;
+            border: 1px solid #555;
+        }
+
+        .toggle-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: #ccc;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .toggle-btn.active {
+            background: #ffff00;
+            color: #000;
+        }
+
+        .display {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: right;
+            font-size: 3rem;
+            font-weight: 300;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            border: 1px solid #444;
+            color: #ffffff;
+        }
+
+        .display.display-special-result {
+            font-family: 'Orbitron', sans-serif;
+            color: #ffff00; /* Digital glow color */
+            text-shadow: 0 0 5px #ffff00, 0 0 10px #ffff00; /* Subtle glow effect */
+            font-size: 2.5rem; /* Adjust size as needed */
+            letter-spacing: 2px; /* Space out letters for digital look */
+        }
+
+        .calculator-body {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* Memory buttons */
+        .memory-row {
+            display: none;
+        }
+
+        .memory-btn {
+            padding: 12px 8px;
+            border: none;
+            background: #3c3c3f;
+            color: #ccc;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid #555;
+        }
+
+        .memory-btn:hover {
+            background: #4a4a4d;
+            border-color: #ffff00;
+        }
+
+        .memory-btn img.func-image { width: 100%; height: 100%; border-radius: 6px; object-fit: cover; }
+        .memory-btn .func-overlay { position: absolute; bottom: 4px; right: 6px; background: rgba(0,0,0,0.8); color: #ffff00; font-size: 0.75rem; font-weight: 600; padding: 2px 6px; border-radius: 10px; }
+
+        /* Main buttons grid */
+        .buttons-grid {
+            display: grid;
+            gap: 8px;
+        }
+
+        .standard-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .scientific-grid {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        .btn {
+            aspect-ratio: 1.2;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #555;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,255,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Number buttons with bird images */
+        .number-btn {
+            background: #404040;
+            color: #fff;
+        }
+
+        .number-btn:hover {
+            background: #505050;
+            border-color: #ffff00;
+        }
+
+        .bird-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover .bird-image {
+            transform: scale(1.1);
+        }
+
+        .number-overlay {
+            position: absolute;
+            bottom: 4px;
+            right: 6px;
+            background: rgba(0,0,0,0.8);
+            color: #ffff00;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        /* Operator buttons */
+        .operator-btn {
+            background: #ffff00;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .operator-btn:hover {
+            background: #fff700;
+        }
+
+        /* Function buttons */
+        .function-btn {
+            background: #3c3c3f;
+            color: #fff;
+        }
+
+        .function-btn:hover {
+            background: #4a4a4d;
+            border-color: #ffff00;
+        }
+
+        /* Scientific image buttons */
+        .func-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .func-overlay {
+            position: absolute;
+            bottom: 4px;
+            right: 6px;
+            background: rgba(0,0,0,0.8);
+            color: #ffff00;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        /* Special buttons */
+        .clear-btn {
+            background: #ff4757;
+            color: #fff;
+        }
+
+        .clear-btn:hover {
+            background: #ff3742;
+        }
+
+        .equals-btn {
+            background: #00d4aa;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .equals-btn:hover {
+            background: #00c49a;
+        }
+
+        .selected-images {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .selected-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            border: 2px solid #ffff00;
+            object-fit: cover;
+        }
+
+        .selected-operator {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffff00; /* Yellow color for operators */
+            padding: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Image Preview Popup */
+        #imagePreviewPopup {
+            display: none;
+            position: absolute;
+            z-index: 1000;
+            pointer-events: none;
+            border: 3px solid #ffff00;
+            border-radius: 10px;
+            background: #1a1a1a;
+            padding: 5px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+        }
+
+        #imagePreviewPopup img {
+            display: block;
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 6px;
+        }
+
+        .download-btn {
+            display: none; /* Hidden by default, controlled by JS */
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ffffff; /* White font */
+            background: #ffff00; /* Neon yellow */
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7); /* Add shadow to make white text readable */
+        }
+
+        .download-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .output-panel {
+                height: 50vh;
+            }
+            
+            .calculator-panel {
+                width: 100%;
+                height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Left Panel - Output Image Display -->
+        <div class="output-panel">
+            <div class="output-image-container" id="outputContainer">
+                <div class="placeholder-text">Select bird images and perform operations<br>to see the magical result!</div>
+                <div class="operation-display" id="operationDisplay" style="display: none;"></div>
+                <div class="loading-overlay" id="loadingOverlay">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+            <div class="selected-images" id="selectedImages"></div>
+            <button id="downloadBtn" class="download-btn">Download image</button>
+        </div>
+
+        <!-- Right Panel - Calculator -->
+        <div class="calculator-panel">
+            <div class="calculator-header">
+                <div class="header-top">
+                    <!-- <div class="app-title">Brainrot Calculator</div> -->
+                    <div class="toggle-container">
+                        <button class="toggle-btn active" id="standardToggle">Standard</button>
+                        <button class="toggle-btn" id="scientificToggle">Scientific</button>
+                    </div>
+                </div>
+                
+                <div class="display" id="display">0</div>
+            </div>
+
+            <div class="calculator-body">
+                <!-- Memory buttons (always visible) -->
+                <div class="memory-row" id="memoryRow">
+                </div>
+
+                <!-- Main calculator buttons -->
+                <div class="buttons-grid standard-grid" id="buttonsGrid">
+                    <!-- This will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up for image preview -->
+    <div id="imagePreviewPopup">
+        <img id="previewImage" src="" alt="Preview">
+    </div>
+
+    <script>
+        // Local bird images for numbers 0-9 (try explicit map first, then common folders/extensions)
+        const numberImages = {
+            '0': './owl.jpg',
+            '1': './bird1.jpg',
+            '2': './bird2.jpg',
+            '3': './birdnew5.jpg',
+            '4': './bird4.jpg',
+            '5': './bird5.jpg',
+            '6': './bird6.jpg',
+            '7': './bird7.jpg',
+            '8': './bird8.jpg',
+            '9': './pigeon.jpg'
+        };
+        const localBirdBases = ['./birds/', './numbers/', './images/', './'];
+
+        const MERGE_IMAGE_PATH = './merge1.png'; // Path for the merge image
+
+        const localExtensions = ['jpg', 'png', 'jpeg', 'webp', 'JPG', 'PNG', 'JPEG', 'WEBP'];
+        function getCandidateBirdUrls(digit) {
+            const candidates = [];
+            if (numberImages[digit]) {
+                candidates.push(numberImages[digit]);
+            }
+            localBirdBases.forEach(base => {
+                localExtensions.forEach(ext => {
+                    candidates.push(`${base}${digit}.${ext}`);
+                });
+            });
+            return candidates;
+        }
+
+        // Image mapping for scientific-only functions (fill these URLs yourself)
+        const scientificFunctionImages = {
+            // Using meme images for scientific functions
+            'sin': './meme1.jpg',
+            'cos': './meme2.jpg',
+            'tan': './meme3.jpg',
+            'ln': './meme4.jpg',
+            'x²': './meme5.jpg',
+            '√': './meme6.jpg',
+            'π': './birdnew3.jpg',
+            'e': './meme8.jpg',
+            '(': './meme9.jpg',
+            ')': './meme10.jpg',
+            'x!': './meme11.jpg',
+            'mod': './meme12.jpg'
+        };
+
+        // Image mapping for Standard mode for any buttons you want as images
+        // Text-only buttons in Standard: CE, C, ⌫, +, -, ×, ÷
+        const standardTextOnly = new Set(['CE', 'C', '⌫', '+', '-', '×', '÷']);
+        const standardButtonImages = {
+            // Provide your meme image URLs here
+            '%': './birdnew1.jpg',
+            '1/x': './birdnew2.jpg',
+            'x²': './birdnew3.jpg',
+            '²√x': './birdnew4.jpg',
+            'MC': '',
+            'MR': '',
+            'M+': '',
+            'M-': '',
+            'MS': '',
+            'MV': ''
+        };
+
+        // Calculator state
+        let currentMode = 'standard';
+        let display = document.getElementById('display');
+        const downloadBtn = document.getElementById('downloadBtn');
+        let currentInput = '0';
+        let operator = null;
+        let previousInput = null;
+        let waitingForOperand = false;
+        let specialSequenceState = 'none'; // 'none', 'x2_clicked', 'plus_clicked', 'ln_clicked'
+        let selectedImages = [];
+        let currentOperation = '';
+
+        // Standard calculator layout
+        const standardButtons = [
+            ['%', 'CE', 'C', '⌫'],
+            ['1/x', 'x²', '²√x', '÷'],
+            ['7', '8', '9', '×'],
+            ['4', '5', '6', '-'],
+            ['1', '2', '3', '+'],
+            ['+/-', '0', '.', '=']
+        ];
+
+        // Scientific calculator layout (simplified)
+        const scientificButtons = [
+            ['sin', 'cos', 'tan', 'ln', '÷'],
+            ['x²', '√', 'π', 'e', '×'],
+            ['7', '8', '9', '(', '-'],
+            ['4', '5', '6', ')', '+'],
+            ['1', '2', '3', 'x!', 'mod'],
+            ['⌫', '0', '.', 'C', '=']
+        ];
+
+        function addImagePreviewEvents(buttonElement) {
+            const imageElement = buttonElement.querySelector('img');
+            if (!imageElement || !imageElement.src) return;
+
+            const previewPopup = document.getElementById('imagePreviewPopup');
+            const previewImage = document.getElementById('previewImage');
+
+            if (!previewPopup || !previewImage) return;
+
+            buttonElement.addEventListener('mouseover', () => {
+                previewImage.src = imageElement.src;
+                previewPopup.style.display = 'block';
+            });
+
+            buttonElement.addEventListener('mousemove', (event) => {
+                const popupWidth = previewPopup.offsetWidth;
+                const popupHeight = previewPopup.offsetHeight;
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+                
+                let left = event.pageX + 20;
+                let top = event.pageY + 20;
+
+                // Adjust if it goes off-screen
+                if (left + popupWidth > windowWidth) {
+                    left = event.pageX - popupWidth - 20;
+                }
+                if (top + popupHeight > windowHeight) {
+                    top = event.pageY - popupHeight - 20;
+                }
+
+                previewPopup.style.left = left + 'px';
+                previewPopup.style.top = top + 'px';
+            });
+
+            buttonElement.addEventListener('mouseout', () => {
+                previewPopup.style.display = 'none';
+                previewImage.src = ''; // Clear src to prevent loading issues
+            });
+        }
+
+        function setupDownloadButton() {
+            downloadBtn.addEventListener('click', () => {
+               console.log("Download button clicked! Redirecting to output.html...");
+               window.location.href = "calculator (2)/calculator/output.html";  
+            });
+        }
+
+        function initializeCalculator() {
+            renderMemoryButtons();
+            renderButtons();
+            setupToggle();
+            setupDownloadButton();
+        }
+
+        function renderMemoryButtons() {
+            const mems = ['MC','MR','M+','M-','MS','MV'];
+            const row = document.getElementById('memoryRow');
+            row.innerHTML = '';
+            mems.forEach(key => {
+                const b = document.createElement('button');
+                b.className = 'memory-btn btn function-btn';
+                if (standardButtonImages[key]) {
+                    const img = document.createElement('img');
+                    img.className = 'func-image';
+                    img.src = standardButtonImages[key];
+                    img.onerror = () => { b.textContent = key; };
+                    b.appendChild(img);
+                    addImagePreviewEvents(b);
+                } else {
+                    b.textContent = key;
+                }
+                row.appendChild(b);
+            });
+        }
+
+        function setupToggle() {
+            document.getElementById('standardToggle').addEventListener('click', () => {
+                switchMode('standard');
+            });
+            
+            document.getElementById('scientificToggle').addEventListener('click', () => {
+                switchMode('scientific');
+            });
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // Update toggle buttons
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(mode + 'Toggle').classList.add('active');
+            
+            // Update grid layout
+            specialSequenceState = 'none'; // Reset special sequence on mode switch
+            selectedImages = []; // Clear selected images on mode switch
+            updateSelectedImagesDisplay();
+            downloadBtn.style.display = 'none'; // Hide button
+            const grid = document.getElementById('buttonsGrid');
+            grid.className = `buttons-grid ${mode}-grid`;
+            
+            renderButtons();
+        }
+
+        function renderButtons() {
+            const grid = document.getElementById('buttonsGrid');
+            const layout = currentMode === 'standard' ? standardButtons : scientificButtons;
+            
+            grid.innerHTML = '';
+            
+            layout.forEach(row => {
+                row.forEach(btnText => {
+                    const button = document.createElement('button');
+                    button.className = 'btn';
+                    
+                    // Check if it's a number button
+                    if (/^\d$/.test(btnText)) {
+                        button.className += ' number-btn';
+                        const img = document.createElement('img');
+                        img.className = 'bird-image';
+                        const candidates = (currentMode === 'standard' && standardButtonImages[btnText])
+                            ? [standardButtonImages[btnText]]
+                            : getCandidateBirdUrls(btnText);
+                        let idx = 0;
+                        img.src = candidates[idx] || '';
+                        img.onerror = () => {
+                            idx += 1;
+                            if (idx < candidates.length) {
+                                img.src = candidates[idx];
+                            } else {
+                                // fallback to plain text button
+                                button.textContent = btnText;
+                            }
+                        };
+                        button.appendChild(img);
+                        addImagePreviewEvents(button);
+                        button.onclick = () => handleNumberClick(btnText);
+                    } else {
+                        // Style different button types
+                        if (['+', '-', '×', '÷'].includes(btnText)) {
+                            button.className += ' operator-btn';
+                            button.textContent = btnText;
+                        } else if (btnText === '=') {
+                            button.className += ' equals-btn';
+                            button.textContent = btnText;
+                        } else if (['C', 'CE', '⌫'].includes(btnText)) {
+                            button.className += ' clear-btn';
+                            button.textContent = btnText;
+                        } else {
+                            // Standard mode: keep a few text-only; others can be images
+                            if (currentMode === 'standard') {
+                                if (!standardTextOnly.has(btnText) && standardButtonImages[btnText]) {
+                                    button.className += ' function-btn';
+                                    const img = document.createElement('img');
+                                    img.className = 'func-image';
+                                    img.src = standardButtonImages[btnText];
+                                    img.onerror = () => {
+                                        button.innerHTML = '';
+                                        button.textContent = btnText;
+                                    };
+                                    button.appendChild(img);
+                                    addImagePreviewEvents(button);
+                                } else {
+                                    button.className += ' function-btn';
+                                    button.textContent = btnText;
+                                }
+                            } else {
+                                // Scientific mode: use image if provided in scientificFunctionImages
+                                if (scientificFunctionImages[btnText]) {
+                                    button.className += ' function-btn';
+                                    const img = document.createElement('img');
+                                    img.className = 'func-image';
+                                    img.src = scientificFunctionImages[btnText];
+                                    img.onerror = () => {
+                                        button.innerHTML = '';
+                                        button.textContent = btnText;
+                                    };
+                                    button.appendChild(img);
+                                    addImagePreviewEvents(button);
+                                } else {
+                                    button.className += ' function-btn';
+                                    button.textContent = btnText;
+                                }
+                            }
+                        }
+                        button.onclick = () => handleButtonClick(btnText);
+                    }
+                    
+                    grid.appendChild(button);
+                });
+            });
+        }
+
+        function handleButtonClick(btnText) {
+            // Reset special sequence if a non-relevant button is pressed
+            if (specialSequenceState !== 'none' && !['π', '+', 'ln', '='].includes(btnText)) {
+                specialSequenceState = 'none';
+                selectedImages = [];
+                updateSelectedImagesDisplay();
+                downloadBtn.style.display = 'none'; // Hide button
+            }
+
+            // Special sequence handling
+            if (btnText === 'π') {
+                const imgPath = scientificFunctionImages['π'];
+                if (imgPath === './birdnew3.jpg') { // Check for the specific image for π
+                    specialSequenceState = 'pi_clicked';
+                    selectedImages.push({ type: 'function', value: 'π', image: imgPath });
+                    updateSelectedImagesDisplay();
+                    return; // Prevent further processing for this button if it's part of the sequence
+                }
+            } else if (btnText === '+') {
+                if (specialSequenceState === 'pi_clicked') {
+                    specialSequenceState = 'plus_clicked';
+                    selectedImages.push({ type: 'operator', value: '+' });
+                    updateSelectedImagesDisplay();
+                    return;
+                }
+            } else if (btnText === 'ln') {
+                const imgPath = scientificFunctionImages['ln'];
+                if (imgPath === './meme4.jpg' && specialSequenceState === 'plus_clicked') {
+                    specialSequenceState = 'ln_clicked';
+                    selectedImages.push({ type: 'function', value: 'ln', image: imgPath });
+                    updateSelectedImagesDisplay();
+                    return;
+                }
+            }
+
+            switch (btnText) {
+                case 'C':
+                case 'CE':
+                    clearAll();
+                    break;
+                case '⌫':
+                    backspace();
+                    break;
+                case '=':
+                    calculate();
+                    break;
+                case '+':
+                case '-':
+                case '×':
+                case '÷':
+                    handleOperator(btnText);
+                    break;
+                case '.':
+                    addDecimal();
+                    break;
+                case '+/-':
+                    toggleSign();
+                    break;
+                default:
+                    // Handle other functions
+                    break;
+            }
+        }
+
+        
+        function updateDisplay() {
+            display.classList.remove('display-special-result'); // Remove special class for normal display
+            display.textContent = currentInput;
+        }
+        
+        function handleNumberClick(number) {
+            // Reset special sequence if a number is clicked
+            if (specialSequenceState !== 'none') {
+                specialSequenceState = 'none';
+                selectedImages = []; // Clear selected images for special sequence
+                downloadBtn.style.display = 'none'; // Hide button
+            }
+            // Add image to selected images
+            const img = numberImages[number];
+            selectedImages.push({ type: 'number', value: number, image: img });
+            updateSelectedImagesDisplay();
+            
+            // Handle calculator logic
+            if (waitingForOperand) {
+                currentInput = number;
+                waitingForOperand = false;
+            } else {
+                currentInput = currentInput === '0' ? number : currentInput + number;
+            }
+            updateDisplay();
+        }
+
+        function updateSelectedImagesDisplay() {
+            const container = document.getElementById('selectedImages');
+            container.innerHTML = '';
+            
+            selectedImages.forEach(item => { // Removed .slice(-2) to show all
+                if (item.type === 'number' || item.type === 'function') {
+                    const img = document.createElement('img');
+                    img.src = item.image;
+                    img.className = 'selected-image';
+                    img.alt = item.value;
+                    container.appendChild(img);
+                } else if (item.type === 'operator') {
+                    const span = document.createElement('span');
+                    span.textContent = item.value;
+                    span.className = 'selected-operator';
+                    container.appendChild(span);
+                }
+            });
+        }
+
+        function clearAll() {
+            currentInput = '0';
+            previousInput = null;
+            waitingForOperand = false;
+            selectedImages = [];
+            specialSequenceState = 'none'; // Reset special sequence state
+            currentOperation = '';
+            downloadBtn.style.display = 'none'; // Hide button
+            updateDisplay();
+            updateSelectedImagesDisplay();
+            hideOperationDisplay();
+        }
+
+        function backspace() {
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+        }
+
+        function addDecimal() {
+            if (waitingForOperand) {
+                currentInput = '0.';
+                waitingForOperand = false;
+            } else if (currentInput.indexOf('.') === -1) {
+                currentInput += '.';
+            }
+            updateDisplay();
+        }
+
+        function toggleSign() {
+            if (currentInput !== '0') {
+                currentInput = currentInput.startsWith('-') ? 
+                    currentInput.slice(1) : '-' + currentInput;
+            }
+            updateDisplay();
+        }
+
+        function handleOperator(nextOperator) {
+            const inputValue = parseFloat(currentInput);
+
+            if (previousInput === null) {
+                previousInput = inputValue;
+            } else if (operator) {
+                const result = performCalculation();
+                currentInput = String(result);
+                previousInput = result;
+                updateDisplay();
+            }
+
+            waitingForOperand = true;
+            operator = nextOperator;
+            
+            // Update operation display
+            currentOperation = `${previousInput} ${nextOperator}`;
+            showOperationDisplay();
+        }
+
+        function calculate() {
+            // Check for special sequence completion
+            if (specialSequenceState === 'ln_clicked') {
+                display.textContent = 'RESULT READY'; // Update main display
+                const outputContainer = document.getElementById('outputContainer');
+                display.classList.add('display-special-result');
+                outputContainer.innerHTML = ''; // Clear previous content
+                const img = document.createElement('img');
+                img.src = MERGE_IMAGE_PATH; // Show the merge image
+                img.className = 'output-image';
+                outputContainer.appendChild(img);
+                downloadBtn.style.display = 'block'; // Show the button
+
+                specialSequenceState = 'none'; // Reset special sequence state
+                selectedImages = []; // Clear selected images after special calculation
+                updateSelectedImagesDisplay();
+                hideOperationDisplay(); // Hide any ongoing operation text
+                return; // Stop normal calculation
+            }
+
+            if (previousInput !== null && operator && !waitingForOperand) {
+                const result = performCalculation();
+                currentInput = String(result);
+                previousInput = null;
+                operator = null;
+                waitingForOperand = true;
+                updateDisplay();
+                
+                // Generate mixed image if we have selected images
+                if (selectedImages.length >= 2) {
+                    generateMixedImage();
+                }
+                
+                hideOperationDisplay();
+            }
+        }
+
+        function performCalculation() {
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+
+            switch (operator) {
+                case '+':
+                    return prev + current;
+                case '-':
+                    return prev - current;
+                case '×':
+                    return prev * current;
+                case '÷':
+                    return current !== 0 ? prev / current : 0;
+                default:
+                    return current;
+            }
+        }
+
+        function showOperationDisplay() {
+            const operationDisplay = document.getElementById('operationDisplay');
+            operationDisplay.textContent = currentOperation;
+            operationDisplay.style.display = 'block';
+        }
+
+        function hideOperationDisplay() {
+            document.getElementById('operationDisplay').style.display = 'none';
+        }
+
+        function generateMixedImage() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const outputContainer = document.getElementById('outputContainer');
+            
+            loadingOverlay.style.display = 'flex';
+            
+            // Simulate image generation process
+            setTimeout(() => {
+                // Create a canvas to blend the images
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 400;
+                canvas.height = 400;
+                
+                // For demo purposes, just show a placeholder mixed image
+                const mixedImageUrl = `https://picsum.photos/400/400?random=${Date.now()}`;
+                
+                const img = document.createElement('img');
+                img.src = mixedImageUrl;
+                img.className = 'output-image';
+                img.onload = () => {
+                    outputContainer.innerHTML = '';
+                    outputContainer.appendChild(img);
+                    loadingOverlay.style.display = 'none';
+                };
+                
+                // Clear selected images after generation
+                selectedImages = [];
+                updateSelectedImagesDisplay();
+            }, 2000);
+        }
+
+        // Initialize the calculator
+        initializeCalculator();
+    </script>
+</body>
+</html>

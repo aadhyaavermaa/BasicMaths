@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="6; url=../../index.html">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video with Auto Download</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden; /* Fixed typo: was "hiddetjn" */
+      background: black;
+    }
+    
+    video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 1; /* Ensure video is behind button */
+    }
+    
+    #unmuteBtn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      z-index: 10; /* Ensure button is above video */
+    }
+    
+    #unmuteBtn:hover {
+      background: rgba(0,0,0,0.8);
+    }
+  </style>
+</head>
+<body>
+  <!-- Use a web-accessible video URL instead of local file path -->
+  <video autoplay loop muted playsinline id="bgVideo">
+    <source src="../../videoplayback.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  
+  <button id="unmuteBtn">Download</button>
+  
+  <script>
+    const video = document.getElementById("bgVideo");
+    const btn = document.getElementById("unmuteBtn");
+    
+    // Auto-download function with 2-second delay
+    function autoDownloadImage() {
+      setTimeout(() => {
+        const link = document.createElement('a');
+        link.href = 'ima.jpg'; // Make sure this image exists in the same directory
+        link.download = 'ima.jpg';
+        link.style.display = 'none'; // Hide the link
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }, 5000); // 2 seconds delay
+    }
+    
+    // Start auto-download when page loads
+    window.addEventListener('load', autoDownloadImage);
+    
+    // Unmute button functionality
+    btn.addEventListener("click", () => {
+      video.muted = false;
+      btn.style.display = "none";
+    });
+    
+    // Fallback: Try to play video if it doesn't autoplay
+    video.addEventListener('canplaythrough', () => {
+      video.play().catch(e => {
+        console.log('Video autoplay prevented by browser');
+      });
+    });
+  </script>
+</body>
+</html>
